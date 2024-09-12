@@ -1,0 +1,16 @@
+{
+  "appName": "Alist",
+  "appVersion": "6.0.1",
+  "appJS": "app.js",
+  "appIcon": "images/logo.png",
+  "appScreenshot": "shot.png",
+  "appDeveloper": "青城",
+  "appSection": "Network",
+  "appSize": "13.1M",
+  "appInstalledSize": "13.2M",
+  "appRemovable": "NO",
+  "appTranslationFile": "languages/Translation",
+  "appPackageName": "alist-unas",
+  "appDescription": "This is an U-NAS Alist App.",
+  "appMobileHTML": ""
+}

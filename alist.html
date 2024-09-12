@@ -1,0 +1,399 @@
+<!--[if IE]>
+  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN">
+<![endif]-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>U-NAS</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/apps/alist/css/alist.css?v=6.0.1&"
+    />
+    <script>
+      window.top.UNAS.SetAppState('Alist', 'active')
+    </script>
+    <script language="JavaScript" type="text/javascript">
+      jQuery.noConflict()
+      ;(function () {
+        getConfig()
+        jQuery('#alist_enable').click(function () {
+          if (jQuery('#alist_enable').prop('checked') == false) {
+            jQuery("[name='alist_input']").attr('disabled', true)
+            if (jQuery('#alist_enable').attr('oldvalue') == 'enable')
+              jQuery('#alist_apply').attr('class', 'unas_button')
+          }
+          if (jQuery('#alist_enable').prop('checked') == true) {
+            jQuery("[name='alist_input']").attr('disabled', false)
+            jQuery('#alist_enable').attr('disabled', false)
+          }
+        })
+        jQuery('#alist_port').keyup(alistCheckPortFunc)
+      })()
+
+      function getConfig() {
+        jQuery('#alist_manager_waiting_content').attr('style', 'display:block')
+        jQuery('#alist_manager_waiting_logo').attr('style', 'display:block')
+        jQuery.ajax({
+          url: '/apps/alist/includes/services_alist.php',
+          type: 'POST',
+          async: true,
+          contentType: 'application/json',
+          data: JSON.stringify({ token: UToken, action: 'getConfig' }),
+          dataType: 'json',
+          timeout: 20000,
+          success: function (data) {
+            if (data.pass == 'exit') {
+              parent.location.assign('/desktop/')
+            } else {
+              if (
+                data.enable == true ||
+                jQuery('#alist_enable').prop('checked')
+              ) {
+                jQuery('#alist_enable').prop('checked', true)
+                jQuery('#alist_enable').attr('oldvalue', 'enable')
+              } else {
+                jQuery("[name='alist_input']").attr('disabled', true)
+                jQuery('#alist_enable').prop('checked', false)
+                jQuery('#alist_enable').attr('oldvalue', 'disable')
+              }
+
+              if (data.enable) {
+                jQuery('#alist_manage').attr(
+                  'url',
+                  'http://' + window.location.hostname + ':' + data.port
+                )
+                jQuery('#alist_manage').attr(
+                  'style',
+                  'width: 120px; display:inline-block;'
+                )
+              } else {
+                jQuery('#alist_manage').attr('style', 'display:none;')
+              }
+
+              jQuery('#alist_config_dir').val(data.configDir)
+              jQuery('#alist_port').val(data.port)
+              jQuery('#alist_initial_password').val(data.initialPassword)
+
+              jQuery('#alist_apply').attr('class', 'unas_button')
+            }
+            jQuery('#alist_manager_waiting_content').attr(
+              'style',
+              'display:none'
+            )
+            jQuery('#alist_manager_waiting_logo').attr('style', 'display:none')
+          },
+          error: function (XMLHttpRequest, textStatus, errorThrown) {
+            alert(textStatus)
+            jQuery('#alist_manager_waiting_content').attr(
+              'style',
+              'display:none'
+            )
+            jQuery('#alist_manager_waiting_logo').attr('style', 'display:none')
+          },
+        })
+      }
+
+      function alistCheckPortFunc() {
+        if (alistCheckPort())
+          jQuery('#alist_apply').attr('class', 'unas_button')
+        else jQuery('#alist_apply').attr('class', 'unas_button_disabled')
+      }
+
+      function alistCheckPort() {
+        var portState = false
+        var port = parseInt(jQuery.trim(jQuery('#alist_port').val()), 10)
+        if (isNaN(port)) {
+          jQuery('#alist_port').val('')
+        } else {
+          jQuery('#alist_port').val(port)
+        }
+        if (usedPort === port) {
+          // 端口可正在用的端口是一样的，不需要验证
+          jQuery('#alist_port_warning').attr('class', 'input_warning')
+          jQuery('#alist_port_warning').attr('title', '')
+          jQuery('#alist_port_warning').html('')
+          portState = true
+        } else if (port > 65535 || port < 1) {
+          jQuery('#alist_port_warning').attr('class', 'input_warning_info')
+          jQuery('#alist_port_warning').attr(
+            'title',
+            UNAS._('Port should between 1 and 65535')
+          )
+          jQuery('#alist_port_warning').html(
+            '* ' + UNAS._('Port should between 1 and 65535')
+          )
+        } else {
+          jQuery.ajax({
+            url: '/apps/ddns-go/includes/services_ddns_go.php',
+            type: 'POST',
+            async: false,
+            contentType: 'application/json',
+            data: JSON.stringify({
+              token: UToken,
+              port: port,
+              action: 'checkport',
+            }),
+            timeout: 20000,
+            dataType: 'json',
+            success: function (data) {
+              if (data.err === 1) {
+                jQuery('#alist_port_warning').attr(
+                  'class',
+                  'input_warning_info'
+                )
+                jQuery('#alist_port_warning').attr('title', UNAS._(data.msg))
+                jQuery('#alist_port_warning').html('* ' + UNAS._(data.msg))
+              } else {
+                jQuery('#alist_port_warning').attr('class', 'input_warning')
+                jQuery('#alist_port_warning').attr('title', '')
+                jQuery('#alist_port_warning').html('')
+                portState = true
+              }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+              alert(textStatus)
+            },
+          })
+        }
+        return portState
+      }
+
+      function isNumeric(strval) {
+        var c
+        for (var i = 0; i < strval.length; i++) {
+          c = strval.charAt(i)
+          if (c < '0' || c > '9') {
+            return false
+          }
+        }
+        return true
+      }
+
+      function submit() {
+        jQuery('#alist_info').html('')
+        if (jQuery('#alist_apply').hasClass('unas_button_disabled')) {
+          return false
+        }
+        jQuery('#alist_manager_waiting_content').attr('style', 'display:block')
+        jQuery('#alist_manager_waiting_logo').attr('style', 'display:block')
+
+        var enable = jQuery('#alist_enable').prop('checked'),
+          configDir = jQuery('#alist_config_dir').val(),
+          port = jQuery('#alist_port').val(),
+          initialPassword = jQuery('#alist_initial_password').val()
+        var params = {
+          token: UToken,
+          enable: enable,
+          configDir: configDir,
+          port: port,
+          initialPassword: initialPassword,
+          action: 'manage',
+        }
+        jQuery.ajax({
+          url: '/apps/alist/includes/services_alist.php',
+          type: 'POST',
+          async: true,
+          contentType: 'application/json',
+          data: JSON.stringify(params),
+          timeout: 20000,
+          dataType: 'json',
+          success: function (data) {
+            if (data.err === 0) {
+              jQuery('#alist_info').attr(
+                'style',
+                'display:block;color: #333333'
+              )
+              jQuery('#alist_info').html(UNAS._('Operation successful'))
+            } else {
+              jQuery('#alist_info').attr(
+                'style',
+                'display:block;color: #DF3E21'
+              )
+              jQuery('#alist_info').html(UNAS._(data.msg))
+            }
+            jQuery('#alist_manager_waiting_content').attr(
+              'style',
+              'display:none'
+            )
+            jQuery('#alist_manager_waiting_logo').attr('style', 'display:none')
+            getConfig()
+          },
+          error: function (XMLHttpRequest, textStatus, errorThrown) {
+            alert(textStatus)
+            jQuery('#alist_manager_waiting_content').attr(
+              'style',
+              'display:none'
+            )
+            jQuery('#alist_manager_waiting_logo').attr('style', 'display:none')
+          },
+        })
+      }
+
+      function openAlist() {
+        window.open(jQuery('#alist_manage').attr('url'), '_blank')
+      }
+    </script>
+  </head>
+  <body>
+    <div id="alist" class="alist_manager">
+      <div
+        id="alist_manager_waiting_content"
+        class="unas_loading_modal"
+        style="display: none"
+      ></div>
+      <div
+        id="alist_manager_waiting_logo"
+        class="unas_loading"
+        style="display: none"
+      ></div>
+      <div class="unas_title">
+        <div
+          id="poweroptions_manager_immediately_tab"
+          class="unas_tab_sel"
+          poweroptionsitemtableid="poweroptions_manager_immediately_page"
+        >
+          <span>##$@alist@$##Alist##$@alist@$##</span>
+        </div>
+      </div>
+      <div class="unas_content">
+        <div
+          id="jv-unas_content_left"
+          class="unas_content_left"
+          style="
+            position: absolute;
+            width: 100%;
+            left: 0;
+            bottom: 60px;
+            top: 60px;
+          "
+        >
+          <div class="unas_items alist-item-li">
+            <ul>
+              <li class="unas_item_li" style="margin-bottom: 10px">
+                <span>
+                  <div class="unas_checkbox">
+                    <input type="checkbox" id="alist_enable" oldvalue="" />
+                    <label for="alist_enable"></label>
+                  </div>
+                </span>
+                <span>##$@alist@$##Enable Alist Service##$@alist@$##</span>
+              </li>
+              <li class="unas_item_li" style="margin-bottom: 10px">
+                <span class="span_left" style="margin-left: 40px"
+                  >##$@alist@$##Configuration Directory:##$@alist@$##</span
+                ><span
+                  ><input
+                    type="text"
+                    id="alist_config_dir"
+                    name="alist_input"
+                    class="unas_input" /></span
+                ><label class="" id="alist_config_dir_warning" title=""></label>
+              </li>
+              <li class="unas_item_li" style="margin-bottom: 10px">
+                <span class="span_left" style="margin-left: 40px"
+                  >##$@alist@$##Port:##$@alist@$##</span
+                ><span
+                  ><input
+                    type="text"
+                    id="alist_port"
+                    name="alist_input"
+                    class="unas_input" /></span
+                ><label class="" id="alist_port_warning" title=""></label>
+              </li>
+              <li class="unas_item_li" style="margin-bottom: 10px">
+                <span class="span_left" style="margin-left: 40px"
+                  >##$@alist@$##Initial Password:##$@alist@$##</span
+                ><span
+                  ><input
+                    type="text"
+                    id="alist_initial_password"
+                    name="alist_input"
+                    class="unas_input" /></span
+                ><label
+                  class=""
+                  id="alist_initial_password_warning"
+                  title=""
+                ></label>
+              </li>
+              <li class="unas_item_li" style="margin-bottom: 10px">
+                <span id="alist_info" style="display: none"></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="unas_content_right">
+          <span class="alist_page_logo"></span>
+        </div>
+      </div>
+      <div class="unas_footer">
+        <a
+          id="alist_main_button"
+          target="_blank"
+          style="
+            width: 72px;
+            height: 32px;
+            display: inline-block;
+            margin-right: 10px;
+          "
+        >
+          <button
+            onClick="submit()"
+            class="unas_button_disabled"
+            id="alist_apply"
+          >
+            ##$@alist@$##Apply##$@alist@$##
+          </button>
+        </a>
+        <button
+          onClick="openAlist()"
+          class="unas_button"
+          id="alist_manage"
+          style="display: none"
+        >
+          ##$@alist@$##Manage Alist##$@alist@$##
+        </button>
+      </div>
+    </div>
+    <script type="text/javascript">
+      ;(function () {
+        var rt = document.getElementById('alist')
+        var pageTranslators = window.top.UNAS.CreateNodesTranslators(
+          rt.parentNode
+        )
+        var OnChangeLanguage = function (e) {
+          for (var i = 0; i < pageTranslators.length; i++) {
+            var node = pageTranslators[i].node
+            var p = pageTranslators[i].translateProperty
+            node[p] = window.top.UNAS._(pageTranslators[i].originalText)
+          }
+          if (
+            jQuery('#alist_port_warning').attr('class') == 'input_warning_info'
+          ) {
+            alistCheckPort()
+          }
+        }
+        OnChangeLanguage()
+        window.top.UNAS.Event.addEvent('ChangeLanguage', OnChangeLanguage)
+        window.addEventListener(
+          'unload',
+          function (e) {
+            window.top.UNAS.Event.removeEvent(
+              'ChangeLanguage',
+              OnChangeLanguage
+            )
+            window.top.UNAS.SetAppState('Alist', 'inactive')
+          },
+          false
+        )
+      })()
+
+      jQuery('#jv-unas_content_left').mCustomScrollbar({
+        autoHideScrollbar: true,
+        theme: 'minimal-dark',
+      })
+    </script>
+  </body>
+</html>

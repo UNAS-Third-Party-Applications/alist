@@ -1,0 +1,26 @@
+{
+    "UNASTranslation": [
+        {
+            "language": "简体中文",
+            "table": [
+            	[ "Alist", "alist", "Alist" ],
+            	[ "Alist", "0", "Alist" ],
+                [ "Enable Alist Service", "alist", "启动Alist服务" ],
+                [ "Configuration Directory:", "alist", "配置目录：" ],
+                [ "Port:", "alist", "访问端口：" ],
+                [ "Initial Password:", "alist", "初始密码：" ],
+                [ "Start Alist Service", "alist", "启动Alist服务" ],
+                [ "Stop Alist Service", "alist", "停止Alist服务" ],
+                [ "Port should between 1 and 65535", "0", "端口应该在1到65535之间" ],
+                [ "Port has been used", "0", "端口已经被使用" ],
+                [ "Failed to save configuration", "0", "保存配置失败" ],
+                ["Token is empty", "0", "Token为空"],
+                ["User information not obtained", "0", "未获取到用户信息"],
+                ["Configuration directory is not exist", "0", "配置目录不存在"],
+                ["Operation successful", "0", "操作成功"],
+                [ "Apply", "alist", "应 用" ],
+				[ "Manage Alist", "alist", "管理Alist" ]
+            ]
+        }
+    ]
+}

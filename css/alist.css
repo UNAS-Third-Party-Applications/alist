@@ -1,0 +1,33 @@
+* {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-decoration: none;
+}
+
+.alist_manager {
+  position: relative;
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+}
+
+.alist_page_logo {
+  width: 128px;
+  height: 128px;
+  background: url(../images/pagelogo.png) no-repeat;
+  margin: 0px auto;
+  margin-right: 60px;
+  display: block;
+}
+.alist-item-li .span_left {
+  width: 150px;
+}
+
+.alist-item-li .unas_item_li .input_warning_info {
+  display: block;
+  float: right;
+  color: #f24141;
+}
