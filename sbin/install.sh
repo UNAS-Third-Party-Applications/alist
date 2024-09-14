@@ -32,8 +32,6 @@ fi
 if [ ! -f "$INSTALL_PATH/alist" ]; then
   echo -e "\r\n${RED_COLOR}出错了${RES}，当前系统未安装 Alist\r\n"
   exit 1
-else
-  rm -f $INSTALL_PATH/alist.db
 fi
 
 # 创建 systemd
