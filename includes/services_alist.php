@@ -50,9 +50,12 @@ if($action == "getConfig") {
     $configData['enable'] = $enable;
     echo json_encode($configData);
   } else {
+    require_once("/unas/wmi/core/wy2account.php");
+    $homesDir = WY2Account::homesDir();
+    $configDir = $homesDir . "/homes/.unas/apps/alist";
     echo json_encode(array(
       'enable' => $enable,
-      'configDir' => "",
+      'configDir' => $configDir,
       'port' => 5244
     ));
   }
@@ -63,11 +66,28 @@ if($action == "getConfig") {
   if (property_exists($jsonObj, "enable")) {
     $enable = $jsonObj->enable;
   }
+  // alist服务的默认配置文件目录
+  require_once("/unas/wmi/core/wy2account.php");
+  $homesDir = WY2Account::homesDir();
+  $defaultConfigDir = $homesDir . "/homes/.unas/apps/alist";
   // alist的配置文件目录
-  $configDir = "/unas/apps/alist/config/alist";
   if (property_exists($jsonObj, 'configDir')) {
     $configDir = $jsonObj->configDir;
+  } else {
+    $configDir = $defaultConfigDir;
   }
+
+  if(empty($configDir) || $configDir == $defaultConfigDir) {
+    // 如果没有设置配置目录，或者配置目录为默认配置目录，则判断默认配置目录是否创建
+    $configDir = $defaultConfigDir;
+    if (!is_dir($configDir)) {
+      // 文件夹不存在，创建文件夹
+      exec("sudo mkdir -p $configDir");
+      // 此处不判断是否创建成功，交由后续判断统一处理
+    }
+  }
+  
+  // 检测配置目录是否存在
   if (!is_dir($configDir)) {
     // 配置目录不存在
     echo json_encode(array(
