@@ -48,11 +48,12 @@ if($action == "getConfig") {
     $jsonString = file_get_contents($configFile);
     $configData = json_decode($jsonString, true);
     $configData['enable'] = $enable;
+    if(empty($jsonObj->configDir)) {
+      $configData['configDir'] = getDefaultConfigDir();
+    }
     echo json_encode($configData);
   } else {
-    require_once("/unas/wmi/core/wy2account.php");
-    $homesDir = WY2Account::homesDir();
-    $configDir = $homesDir . "/homes/.unas/apps/alist";
+    $configDir = getDefaultConfigDir();
     echo json_encode(array(
       'enable' => $enable,
       'configDir' => $configDir,
@@ -67,9 +68,7 @@ if($action == "getConfig") {
     $enable = $jsonObj->enable;
   }
   // alist服务的默认配置文件目录
-  require_once("/unas/wmi/core/wy2account.php");
-  $homesDir = WY2Account::homesDir();
-  $defaultConfigDir = $homesDir . "/homes/.unas/apps/alist";
+  $defaultConfigDir = getDefaultConfigDir();
   // alist的配置文件目录
   if (property_exists($jsonObj, 'configDir')) {
     $configDir = $jsonObj->configDir;
@@ -88,7 +87,10 @@ if($action == "getConfig") {
   }
   
   // 检测配置目录是否存在
-  if (!is_dir($configDir)) {
+  if (is_dir($configDir)) {
+    // 设置www-data对配置文件目录访问权限
+    exec("sudo setfacl -d -m u:www-data:rwx $configDir && sudo setfacl -m m:rwx $configDir && sudo setfacl -R -m u:www-data:rwx $configDir");
+  } else {
     // 配置目录不存在
     echo json_encode(array(
       'err' => 2,

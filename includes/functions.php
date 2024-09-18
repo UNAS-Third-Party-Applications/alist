@@ -29,4 +29,11 @@ function isPortOccupied($port) {
     return false;
   }
 }
+
+// 获取默认配置文件目录
+function getDefaultConfigDir() {
+  require_once("/unas/wmi/core/wy2account.php");
+  $homesDir = WY2Account::homesDir();
+  return $homesDir . "/homes/.unas/apps/alist";
+}
 ?>
