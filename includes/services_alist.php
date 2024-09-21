@@ -42,21 +42,31 @@ if($action == "getConfig") {
     // Alist服务已经安装，判断是否运行
     $enable = checkServiceStatus("alist");
   }
+  // 获取共享文件夹列表
+  require_once("/unas/api/php/folder.php");
+  $shareFolders = \UNAS\Folder\GetAllSharedFolders();
+  // 获取homes目录中apps的目录
+  $homesAppsFolder = getHomesAppsDir();
   // 读取配置文件中的配置
   $configFile = '/unas/apps/alist/config/config.json';
+  // alist服务的默认配置文件目录
+  $defaultConfigDir = getDefaultConfigDir();
   if(file_exists($configFile)) {
     $jsonString = file_get_contents($configFile);
     $configData = json_decode($jsonString, true);
     $configData['enable'] = $enable;
+    $configData['shareFolders'] = $shareFolders;
+    $configData['homesAppsFolder'] = $homesAppsFolder;
     if(empty($jsonObj->configDir)) {
-      $configData['configDir'] = getDefaultConfigDir();
+      $configData['configDir'] = $homesAppsFolder;
     }
     echo json_encode($configData);
   } else {
-    $configDir = getDefaultConfigDir();
     echo json_encode(array(
       'enable' => $enable,
-      'configDir' => $configDir,
+      'homesAppsFolder' => $homesAppsFolder,
+      'shareFolders' => $shareFolders,
+      'configDir' => $homesAppsFolder,
       'port' => 5244
     ));
   }
@@ -67,29 +77,37 @@ if($action == "getConfig") {
   if (property_exists($jsonObj, "enable")) {
     $enable = $jsonObj->enable;
   }
-  // alist服务的默认配置文件目录
-  $defaultConfigDir = getDefaultConfigDir();
   // alist的配置文件目录
   if (property_exists($jsonObj, 'configDir')) {
     $configDir = $jsonObj->configDir;
   } else {
-    $configDir = $defaultConfigDir;
+    // 配置目录未设置
+    echo json_encode(array(
+      'err' => 2,
+      'msg' => 'No configuration directory set'
+    ));
+    return;
   }
 
-  if(empty($configDir) || $configDir == $defaultConfigDir) {
-    // 如果没有设置配置目录，或者配置目录为默认配置目录，则判断默认配置目录是否创建
-    $configDir = $defaultConfigDir;
-    if (!is_dir($configDir)) {
-      // 文件夹不存在，创建文件夹
-      exec("sudo mkdir -p $configDir");
-      // 此处不判断是否创建成功，交由后续判断统一处理
-    }
-  }
-  
   // 检测配置目录是否存在
   if (is_dir($configDir)) {
-    // 设置www-data对配置文件目录访问权限
-    exec("sudo setfacl -d -m u:www-data:rwx $configDir && sudo setfacl -m m:rwx $configDir && sudo setfacl -R -m u:www-data:rwx $configDir");
+    $alistConfigDir = $configDir."/alist";
+    if (!is_dir($alistConfigDir)) {
+      // 文件夹不存在，创建文件夹
+      exec("sudo mkdir -p $alistConfigDir");
+      // 此处不判断是否创建成功，交由后续判断统一处理
+    }
+    if (is_dir($alistConfigDir)) {
+      // 设置www-data对alist配置文件目录访问权限
+      exec("sudo setfacl -d -m u:www-data:rwx $alistConfigDir && sudo setfacl -m m:rwx $alistConfigDir && sudo setfacl -R -m u:www-data:rwx $alistConfigDir");
+    } else {
+      // alist配置目录创建失败
+      echo json_encode(array(
+        'err' => 2,
+        'msg' => 'Failed to create Alist Configuration directory is not exist'
+      ));
+      return;
+    }
   } else {
     // 配置目录不存在
     echo json_encode(array(
@@ -138,7 +156,7 @@ if($action == "getConfig") {
   }
 
   // 检查alist的配置文件是否已经存在
-  $alistConfigFile = $configDir."/config.json";
+  $alistConfigFile = $alistConfigDir."/config.json";
   if(file_exists($alistConfigFile)) {
     // 如果alist配置文件存在，和修改文件权限和所有者
     exec("sudo chown www-data:www-data $alistConfigFile");
@@ -206,7 +224,7 @@ if($action == "getConfig") {
   $uninstallServiceCommand = "sudo $uninstallScript $sbinPath";
   if($enable) {
     // alist的安装命令
-    $installServiceCommand = "sudo $installScript $sbinPath $configDir";
+    $installServiceCommand = "sudo $installScript $sbinPath $alistConfigDir";
     // error_log("安装命令为：".$installServiceCommand);
 
     // 判断Alist服务是否已经安装
@@ -230,7 +248,7 @@ if($action == "getConfig") {
     if (property_exists($jsonObj, 'initialPassword')) {
       $initialPassword = $jsonObj->initialPassword;
       if(!empty($initialPassword)) {
-        $setPasswordCommand = "sudo $appFile admin --data  $configDir set $initialPassword";
+        $setPasswordCommand = "sudo $appFile admin --data  $alistConfigDir set $initialPassword";
         // error_log($setPasswordCommand);
         exec($setPasswordCommand, $output, $returnVar);
         // 输出Shell脚本的输出

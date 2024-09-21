@@ -22,12 +22,24 @@
   margin-right: 60px;
   display: block;
 }
+
+.alist-item-li .unas_item_li {
+  width: 390px;
+}
+
 .alist-item-li .span_left {
   width: 150px;
+}
+
+.alist-item-li span .unas_input {
+  width: 200px;
 }
 
 .alist-item-li .unas_item_li .input_warning_info {
   display: block;
   float: right;
   color: #f24141;
+}
+.alist-item-li .unas_item_li .unas_select {
+  padding-right: 0px;
 }

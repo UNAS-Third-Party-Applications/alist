@@ -21,11 +21,13 @@
         jQuery('#alist_enable').click(function () {
           if (jQuery('#alist_enable').prop('checked') == false) {
             jQuery("[name='alist_input']").attr('disabled', true)
+            jQuery("[class='unas_select']").attr('disabled', true)
             if (jQuery('#alist_enable').attr('oldvalue') == 'enable')
               jQuery('#alist_apply').attr('class', 'unas_button')
           }
           if (jQuery('#alist_enable').prop('checked') == true) {
             jQuery("[name='alist_input']").attr('disabled', false)
+            jQuery("[class='unas_select']").attr('disabled', false)
             jQuery('#alist_enable').attr('disabled', false)
           }
         })
@@ -55,6 +57,7 @@
                 jQuery('#alist_enable').attr('oldvalue', 'enable')
               } else {
                 jQuery("[name='alist_input']").attr('disabled', true)
+                jQuery("[class='unas_select']").attr('disabled', true)
                 jQuery('#alist_enable').prop('checked', false)
                 jQuery('#alist_enable').attr('oldvalue', 'disable')
               }
@@ -72,11 +75,32 @@
                 jQuery('#alist_manage').attr('style', 'display:none;')
               }
 
-              jQuery('#alist_config_dir').val(data.configDir)
+              var shareFolders = data.shareFolders
+              var selectFolder = data.configDir
+              if(data.homesAppsFolder && data.homesAppsFolder !== "") {
+                if(shareFolders) {
+                  shareFolders.unshift({
+                    path: data.homesAppsFolder
+                  })
+                } else {
+                  shareFolders = [{
+                    path: data.homesAppsFolder
+                  }]
+                }
+                if(selectFolder === null || selectFolder === undefined || selectFolder === '') {
+                  selectFolder = data.homesAppsFolder
+                }
+              }
+              var shareFolderAvail = share_folder_list('alist_config_dir', shareFolders, selectFolder)
+              // jQuery('#alist_config_dir').val(data.configDir)
               jQuery('#alist_port').val(data.port)
               jQuery('#alist_initial_password').val(data.initialPassword)
 
-              jQuery('#alist_apply').attr('class', 'unas_button')
+              if (shareFolderAvail) {
+                jQuery('#alist_apply').attr('class', 'unas_button')
+              } else {
+                jQuery('#alist_apply').attr('class', 'unas_button_disabled')
+              }
             }
             jQuery('#alist_manager_waiting_content').attr(
               'style',
@@ -234,6 +258,56 @@
       function openAlist() {
         window.open(jQuery('#alist_manage').attr('url'), '_blank')
       }
+
+      // 功能函数，缩略太长的字符串
+      function trunc(str, len){
+        if(str == null)
+          return '';
+        var str_length = 0;
+        var str_cut = new String();
+        for (var i = 0; i < str.length; i++){
+          a = str.charAt(i);
+          str_length++;
+          if (escape(a).length > 4) {
+              str_length++;
+          }
+          str_cut = str_cut.concat(a);
+          if (str_length > len) {
+            str_cut = str_cut.concat("...");
+            return str_cut;
+          }
+        }
+        if (str_length <= len) {
+          return str;
+        }
+      }
+
+      function share_folder_list(elementId, folders, folder_selected){
+        var folder_opts = "";
+        var selected = false;
+        var shareFolderAvail = false;
+        if (folders === null || folders === undefined || folders.length === 0){
+          // 没有共享文件夹可用
+          shareFolderAvail = false;
+          folder_opts = '<option value="">' + UNAS._("##$@alist@$##Enable Home Dir or create a SHARE FOLDER before select##$@alist@$##") + '</option>';
+        }else{
+          shareFolderAvail = true;
+          for (var i = 0; i < folders.length; i++) {
+            var folderPath = folders[i].path;
+            folder_opts += '<option value="' + folderPath + '"' + ' title="' + folderPath + '"';
+            if (folderPath == folder_selected){
+              folder_opts += ' selected="selected"';
+              selected = true;
+            }
+            folder_opts += '>' + trunc(folderPath, 30) + '</option>';
+          }
+        }
+        jQuery('#' + elementId).html(folder_opts);
+        if (shareFolderAvail && !selected){
+          jQuery('#'+elementId+' option:first').prop("selected", "selected");
+        }
+        return shareFolderAvail;
+      }
     </script>
   </head>
   <body>
@@ -283,13 +357,18 @@
               <li class="unas_item_li" style="margin-bottom: 10px">
                 <span class="span_left" style="margin-left: 40px"
                   >##$@alist@$##Configuration Directory:##$@alist@$##</span
-                ><span
+                >
+                <span>
+                  <select class="unas_select" id="alist_config_dir" name="alist_config_dir">
+                  </select>
+                </span>
+                <!-- <span
                   ><input
                     type="text"
                     id="alist_config_dir"
                     name="alist_input"
                     class="unas_input" /></span
-                ><label class="" id="alist_config_dir_warning" title=""></label>
+                ><label class="" id="alist_config_dir_warning" title=""></label> -->
               </li>
               <li class="unas_item_li" style="margin-bottom: 10px">
                 <span class="span_left" style="margin-left: 40px"
