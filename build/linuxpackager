@@ -1,0 +1,55 @@
+#!/bin/bash
+#
+
+set -e
+set -o pipefail
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+cd "$SCRIPT_DIR/.."
+
+# Get package version without double quotes
+# 从app.json中获取包名
+PACKAGE_NAME="$( eval echo $( jq '.appPackageName' app.json) )"
+# 从app.json中获取版本号
+VERSION="$( eval echo $( jq '.appVersion' app.json) )"
+# 从app.json中获取描述
+DESCRIPTION="$( eval echo $( jq '.appDescription' app.json) )"
+# 打包完成后的文件名
+OUTPUT_FILE="${PACKAGE_NAME}_${VERSION}_amd64.deb"
+
+echo ">>> Building Client"
+echo "--------------------"
+
+# 预处理，比如需要编译时进行文件编译等
+
+echo ">>> Packaging"
+echo "--------------------"
+
+# 复制相关文件到dist目录
+mkdir -p dist
+rm -rf dist/debian
+cp -R build/debian dist/debian
+# 复制应用程序文件到dist目录
+rsync -avrP --exclude='.history' --exclude='.git' --exclude='build' --exclude='dist' --exclude='.gitignore' ./ ./dist/debian/unas/apps/alist
+chmod -R 775 dist/debian
+
+# Create debian control file
+controlfile="Package: $PACKAGE_NAME
+Version: $VERSION
+Section: base
+Priority: optional
+Architecture: amd64
+Depends:
+Maintainer: 青城
+Description: $DESCRIPTION"
+
+echo "$controlfile" > dist/debian/DEBIAN/control;
+
+# Package debian
+
+# fakeroot可以模拟root，但是需要安装一下 apt-get install fakeroot
+# fakeroot dpkg-deb -Zxz --build dist/debian
+sudo dpkg -b dist/debian "dist/$OUTPUT_FILE"
+
+echo "Finished! Filename: $OUTPUT_FILE"

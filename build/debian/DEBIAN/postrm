@@ -1,0 +1,9 @@
+#!/bin/bash
+# postrm script for alist
+#
+
+set -e
+set -o pipefail
+
+# 删除程序文件
+rm -rf /unas/apps/alist
