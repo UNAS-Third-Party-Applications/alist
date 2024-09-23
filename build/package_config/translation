@@ -1,0 +1,54 @@
+﻿{
+    "UNASTranslation": [
+        {
+            "language": "简体中文",
+            "table": [
+                [
+                    "Alist",
+                    "0",
+                    "Alist"
+                ],
+                [
+                    "Storage",
+                    "0",
+                    "存储管理"
+                ],
+                [
+                    "This is an U-NAS Alist App.",
+                    "0",
+                    "软件包提供了一个Alist管理服务"
+                ],
+                [
+                    "QingCheng",
+                    "0",
+                    "青城"
+                ]
+            ]
+        },
+        {
+            "language": "한국어",
+            "table": [
+                [
+                    "Alist",
+                    "0",
+                    "Alist"
+                ],
+                [
+                    "Storage",
+                    "0",
+                    "스토리지"
+                ],
+                [
+                    "This is an U-NAS Alist App.",
+                    "0",
+                    "패키지는Alist관리서비스를제공합니다."
+                ],
+                [
+                    "QingCheng",
+                    "0",
+                    "QingCheng"
+                ]
+            ]
+        }
+    ]
+}

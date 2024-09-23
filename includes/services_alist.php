@@ -43,8 +43,9 @@ if($action == "getConfig") {
     $enable = checkServiceStatus("alist");
   }
   // 获取共享文件夹列表
-  require_once("/unas/api/php/folder.php");
-  $shareFolders = \UNAS\Folder\GetAllSharedFolders();
+  // require_once("/unas/api/php/folder.php");
+  // $shareFolders = \UNAS\Folder\GetAllSharedFolders();
+  $shareFolders = getAllSharefolder();
   // 获取homes目录中apps的目录
   $homesAppsFolder = getHomesAppsDir();
   // 读取配置文件中的配置

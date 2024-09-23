@@ -38,7 +38,9 @@ rm -rf dist/debian
 mkdir -p dist/debian
 # cp -R build/debian dist/debian
 # 使用rsync命令替代cp进行文件复制，用于实现复制时过滤文件
-rsync -avrP --exclude='.history' --exclude='.git' --exclude='.gitkeep' --exclude='.gitignore' build/debian dist/debian
+rsync -avrP --exclude='.history' --exclude='.git' --exclude='.gitkeep' --exclude='.gitignore' build/debian/ dist/debian/
+# 创建程序目录
+mkdir -p "dist/debian/unas/apps/$SOFT_DIR"
 # 复制应用程序文件到dist/debian/unas/apps目录，用于实现程序的安装
 rsync -avrP --exclude='.history' --exclude='.git' --exclude='.gitkeep' --exclude='.gitignore' --exclude='build' --exclude='dist' ./ "./dist/debian/unas/apps/$SOFT_DIR"
 chmod -R 775 dist/debian
@@ -69,6 +71,38 @@ echo "$controlfile" > dist/debian/DEBIAN/control;
 
 # fakeroot可以模拟root，但是需要安装一下 apt-get install fakeroot
 # fakeroot dpkg-deb -Zxz --build dist/debian
-sudo dpkg -b dist/debian "dist/$OUTPUT_FILE"
+
+# 创建package目录，可以提交给UNAS
+PACKAGE_CONFIG_NAME="${PACKAGE_NAME}_config"
+mkdir -p "dist/$PACKAGE_CONFIG_NAME"
+sudo dpkg -b dist/debian "dist/$PACKAGE_CONFIG_NAME/$OUTPUT_FILE"
+
+# 复制package_config目录内的文件到package目录
+cp -R build/package_config/* "dist/$PACKAGE_CONFIG_NAME/"
+# 从app.json中获取section
+SECTION="$( eval echo $( jq '.appSection' app.json) )"
+APP_NAME="$( eval echo $( jq '.appName' app.json) )"
+APP_SIZE=`stat --format="%s" dist/$PACKAGE_CONFIG_NAME/$OUTPUT_FILE | awk '{printf "%.2fM", $1/1024/1024}'`
+INSTALL_SIZE=`ls -lR dist/debian/unas/apps/alist/ | grep "^-" | awk '{total += $5} END {printf "%.2fM", total/1024/1024}'`
+
+# 创建包的config.json
+packageConfig="{
+    \"ConfigInfo\": {
+        \"appdir\": \"$SOFT_DIR\",
+        \"appname\": \"$APP_NAME\",
+        \"description\": \"$DESCRIPTION\",
+        \"developer\": \"$APP_DEVELOPER\",
+        \"icon\": \"logo.png\",
+        \"installedsize\": \"$INSTALL_SIZE\",
+        \"packagename\": \"$PACKAGE_NAME\",
+        \"removable\": \"YES\",
+        \"section\": \"$SECTION\",
+        \"shot\": \"shot.jpg\",
+        \"size\": \"$APP_SIZE\",
+        \"translationfile\": \"translation\",
+        \"version\": \"$VERSION\"
+    }
+}"
+echo "$packageConfig" > "dist/$PACKAGE_CONFIG_NAME/config.json";
 
 echo "Finished! Filename: $OUTPUT_FILE"

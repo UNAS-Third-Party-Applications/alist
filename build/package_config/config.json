@@ -1,0 +1,17 @@
+{
+    "ConfigInfo": {
+        "appdir": "应用目录名",
+        "appname": "应用名，需要在translation中配置对应的译文",
+        "description": "描述信息，需要在translation中配置对应的译文",
+        "developer": "开发者名，需要在translation中配置对应的译文",
+        "icon": "logo.png",
+        "installedsize": "安装包大小，单位为M，无需填写，打包脚本会生成",
+        "packagename": "包名",
+        "removable": "YES",
+        "section": "应用类别，需要在translation中配置对应的译文",
+        "shot": "shot.jpg",
+        "size": "安装包大小，单位为M，无需填写，打包脚本会生成",
+        "translationfile": "translation",
+        "version": "版本"
+    }
+}
