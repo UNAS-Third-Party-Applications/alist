@@ -83,7 +83,7 @@ cp -R build/package_config/* "dist/$PACKAGE_CONFIG_NAME/"
 SECTION="$( eval echo $( jq '.appSection' app.json) )"
 APP_NAME="$( eval echo $( jq '.appName' app.json) )"
 APP_SIZE=`stat --format="%s" dist/$PACKAGE_CONFIG_NAME/$OUTPUT_FILE | awk '{printf "%.2fM", $1/1024/1024}'`
-INSTALL_SIZE=`ls -lR dist/debian/unas/apps/alist/ | grep "^-" | awk '{total += $5} END {printf "%.2fM", total/1024/1024}'`
+INSTALL_SIZE=`ls -lR "dist/debian/unas/apps/$SOFT_DIR/" | grep "^-" | awk '{total += $5} END {printf "%.2fM", total/1024/1024}'`
 
 # 创建包的config.json
 packageConfig="{
