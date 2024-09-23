@@ -42,6 +42,12 @@ function getDefaultConfigDir() {
   return getHomesAppsDir() . "/alist";
 }
 
+// 获取处于共享状态的共享目录
+function getSharedFolder() {
+  require_once("/unas/api/php/folder.php");
+  return \UNAS\Folder\GetAllSharedFolders();
+}
+
 // 获取所有共享目录，包括lvm， zfs 和网络卷的
 function getAllSharefolder() 
 {
