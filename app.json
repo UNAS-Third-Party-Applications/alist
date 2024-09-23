@@ -8,7 +8,7 @@
   "appSection": "Network",
   "appSize": "13.1M",
   "appInstalledSize": "13.2M",
-  "appRemovable": "NO",
+  "appRemovable": "YES",
   "appTranslationFile": "languages/Translation",
   "appPackageName": "alist-unas",
   "appDescription": "This is an U-NAS Alist App.",
