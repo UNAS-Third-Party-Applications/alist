@@ -1,0 +1,1 @@
+/lib/systemd/system 可以编写.service文件，配合systemctl工具，使能服务。（将软件作为系统服务，实现开机自启，使用systemctl管理服务启停等）

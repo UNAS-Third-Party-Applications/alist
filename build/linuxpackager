@@ -8,6 +8,9 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 cd "$SCRIPT_DIR/.."
 
+# 获取软件目录名称
+SOFT_DIR=$(basename "$PWD")
+
 # Get package version without double quotes
 # 从app.json中获取包名
 PACKAGE_NAME="$( eval echo $( jq '.appPackageName' app.json) )"
@@ -30,9 +33,19 @@ echo "--------------------"
 mkdir -p dist
 rm -rf dist/debian
 cp -R build/debian dist/debian
-# 复制应用程序文件到dist目录
-rsync -avrP --exclude='.history' --exclude='.git' --exclude='build' --exclude='dist' --exclude='.gitignore' ./ ./dist/debian/unas/apps/alist
+# 复制应用程序文件到dist/debian/unas/apps目录，用于实现程序的安装
+rsync -avrP --exclude='.history' --exclude='.git' --exclude='build' --exclude='dist' --exclude='.gitignore' ./ "./dist/debian/unas/apps/$SOFT_DIR"
 chmod -R 775 dist/debian
+
+# 替换DEBIAN目录中的各种处理脚本中的文件路径
+SCRIPTS=("dist/debian/DEBIAN/preinst" "dist/debian/DEBIAN/postinst" "dist/debian/DEBIAN/prerm" "dist/debian/DEBIAN/postrm")
+
+for SCRIPT_ITEM in "${SCRIPTS[@]}"
+do
+  if [ -e "$SCRIPT_ITEM" ]; then
+    sed -i "s/SOFT_DIR/$SOFT_DIR/g" "$SCRIPT_ITEM"
+  fi
+done
 
 # Create debian control file
 controlfile="Package: $PACKAGE_NAME
