@@ -1,0 +1,12 @@
+#!/bin/bash
+# postinst script
+# 处理安装后的事件的脚本文件，比如创建快捷方式，删除备份文件等操作，按需添加
+#
+
+set -e
+set -o pipefail
+
+# 删除旧程序备份
+if [ -d "/unas/apps/SOFT_DIR_old" ]; then
+    rm -rf /unas/apps/SOFT_DIR_old
+fi

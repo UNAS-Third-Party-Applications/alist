@@ -1,0 +1,7 @@
+#!/bin/bash
+# prerm script
+# 处理删除前操作的脚本文件，按需添加
+#
+
+set -e
+set -o pipefail

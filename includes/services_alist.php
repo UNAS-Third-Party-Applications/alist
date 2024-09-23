@@ -49,8 +49,6 @@ if($action == "getConfig") {
   $homesAppsFolder = getHomesAppsDir();
   // 读取配置文件中的配置
   $configFile = '/unas/apps/alist/config/config.json';
-  // alist服务的默认配置文件目录
-  $defaultConfigDir = getDefaultConfigDir();
   if(file_exists($configFile)) {
     $jsonString = file_get_contents($configFile);
     $configData = json_decode($jsonString, true);
@@ -104,7 +102,7 @@ if($action == "getConfig") {
       // alist配置目录创建失败
       echo json_encode(array(
         'err' => 2,
-        'msg' => 'Failed to create Alist Configuration directory is not exist'
+        'msg' => 'Failed to create Configuration directory'
       ));
       return;
     }
@@ -116,6 +114,7 @@ if($action == "getConfig") {
     ));
     return;
   }
+  
   // alist的端口，默认5244
   $port = 5244;
   if (property_exists($jsonObj, 'port')) {

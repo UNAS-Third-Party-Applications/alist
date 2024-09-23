@@ -1,0 +1,19 @@
+#!/bin/bash
+# preinst script
+# 进行安装前操作的脚本文件，例如用于备份（以便安装失败时回滚）、添加用户、创建目录、设置权限等
+#
+
+set -e
+set -o pipefail
+
+# 备份旧程序目录
+
+# 如果存在之前的备份目录，删除
+if [ -d "/unas/apps/SOFT_DIR_old" ]; then
+    rm -rf /unas/apps/SOFT_DIR_old
+fi
+
+# 如果之前安装了程序，对程序目录进行备份
+if [ -d "/unas/apps/SOFT_DIR" ]; then
+    mv /unas/apps/SOFT_DIR /unas/apps/SOFT_DIR_old
+fi
