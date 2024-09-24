@@ -8,7 +8,7 @@ jobs:
   release:
     strategy:
       matrix:
-        platform: [ debian-11 ]
+        platform: [ ubuntu-latest ]
     name: Release
     runs-on: ${{ matrix.platform }}
     steps:
