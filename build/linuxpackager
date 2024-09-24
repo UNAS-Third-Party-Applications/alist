@@ -106,6 +106,6 @@ packageConfig="{
 echo "$packageConfig" > "dist/$PACKAGE_CONFIG_NAME/config.json";
 
 # 将dist/$PACKAGE_CONFIG_NAME目录压缩为zip文件
-zip -r "$PACKAGE_CONFIG_NAME.zip" "dist/$PACKAGE_CONFIG_NAME/"
+zip -r "$PACKAGE_CONFIG_NAME.zip" "dist/$PACKAGE_CONFIG_NAME/" && mv "$PACKAGE_CONFIG_NAME.zip" dist/
 
 echo "Finished! Filename: $OUTPUT_FILE"
