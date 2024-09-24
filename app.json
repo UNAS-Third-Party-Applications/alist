@@ -10,7 +10,7 @@
   "appInstalledSize": "13.2M",
   "appRemovable": "YES",
   "appTranslationFile": "languages/Translation",
-  "appPackageName": "alist-unas",
+  "appPackageName": "alist-ext",
   "appDescription": "This is an U-NAS Alist App.",
   "appMobileHTML": ""
 }

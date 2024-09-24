@@ -37,7 +37,5 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.MY_TOKEN }}
-          body_path: ./CHANGELOG.md
-          files: |
-            ./dist/alist-ext_config/**
-            ./CHANGELOG.md
+          files: dist/alist-ext_config/**
+          prerelease: false
