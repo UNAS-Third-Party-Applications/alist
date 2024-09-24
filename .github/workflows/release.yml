@@ -9,7 +9,6 @@ jobs:
     strategy:
       matrix:
         platform: [ ubuntu-latest ]
-        zipname: [ alist-ext_config.zip ]
     name: Release
     runs-on: ${{ matrix.platform }}
     steps:
@@ -39,5 +38,5 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.MY_TOKEN }}
-          files: dist/${{ matrix.zipname }}
+          files: dist/*.zip
           prerelease: false
