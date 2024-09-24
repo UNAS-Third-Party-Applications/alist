@@ -9,6 +9,7 @@ jobs:
     strategy:
       matrix:
         platform: [ ubuntu-latest ]
+        zipname: [ alist-ext_config.zip ]
     name: Release
     runs-on: ${{ matrix.platform }}
     steps:
@@ -28,6 +29,7 @@ jobs:
         run: |
           sudo apt install rsync
           sudo apt install jq
+          sudo apt install zip
 
       - name: Build
         run: |
@@ -37,5 +39,5 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.MY_TOKEN }}
-          files: dist/alist-ext_config/**
+          files: dist/${{ matrix.zipname }}
           prerelease: false
