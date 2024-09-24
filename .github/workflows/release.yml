@@ -1,0 +1,43 @@
+name: release
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  release:
+    strategy:
+      matrix:
+        platform: [ debian-11 ]
+    name: Release
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Prerelease
+        uses: irongut/EditRelease@v1.2.0
+        with:
+          token: ${{ secrets.MY_TOKEN }}
+          id: ${{ github.event.release.id }}
+          prerelease: true
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: |
+          sudo apt install rsync
+          sudo apt install jq
+
+      - name: Build
+        run: |
+          bash build/linuxpackager
+
+      - name: Upload assets
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.MY_TOKEN }}
+          body_path: ./CHANGELOG.md
+          files: |
+            ./dist/alist-ext_config/**
+            ./CHANGELOG.md
