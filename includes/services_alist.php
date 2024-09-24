@@ -50,11 +50,12 @@ if($action == "getConfig") {
   $configFile = '/unas/apps/alist/config/config.json';
   if(file_exists($configFile)) {
     $jsonString = file_get_contents($configFile);
+    // 如果想要以数组形式解码JSON，可以传递第二个参数为true
     $configData = json_decode($jsonString, true);
     $configData['enable'] = $enable;
     $configData['shareFolders'] = $shareFolders;
     $configData['homesAppsFolder'] = $homesAppsFolder;
-    if(empty($jsonObj->configDir)) {
+    if(empty($configData['configDir'])) {
       $configData['configDir'] = $homesAppsFolder;
     }
     echo json_encode($configData);
