@@ -30,16 +30,31 @@ function isPortOccupied($port) {
   }
 }
 
-// 获取homes下的apps目录
-function getHomesAppsDir() {
+// 获取homes目录
+function getHomesDir() {
   require_once("/unas/wmi/core/wy2account.php");
   $homesDir = WY2Account::homesDir();
-  return $homesDir . "/homes/.unas/apps";
+  return $homesDir;
+}
+
+// 获取homes下的apps目录
+function getHomesAppsDir() {
+  $homesDir = getHomesDir();
+  // 如果没有开启homes目录，则返回空字符串
+  if (trim($homesDir) == "") {
+    return "";
+  }
+  return $homesDir . "/homes/.ext/apps";
 }
 
 // 获取默认配置文件目录
 function getDefaultConfigDir() {
-  return getHomesAppsDir() . "/alist";
+  $homesDir = getHomesDir();
+  // 如果没有开启homes目录，则返回空字符串
+  if (trim($homesDir) == "") {
+    return "";
+  }
+  return $homesDir . "/homes/.ext/config";
 }
 
 // 获取处于共享状态的共享目录
@@ -181,4 +196,31 @@ function getAllSharefolder()
   return $sharefolders;
 }
 
+/*
+ * 保存管理程序的配置到配置文件中 
+ */
+function saveManageConfig($appDir, $manageConfigData) {
+    // 将配置换成JSON格式
+    $manageConfigJson = json_encode($manageConfigData);
+    // 管理应用配置目录
+    $manageConfigDir = $hmoesExtAppsFolder.$appDir;
+    if (!is_dir($manageConfigDir)) {
+    // 文件夹不存在，创建文件夹
+    exec("sudo mkdir -p $manageConfigDir");
+    // 此处不判断是否创建成功，交由后续判断统一处理
+    }
+    // 修改管理应用目录权限和所有者
+    exec("sudo chown www-data:www-data $manageConfigDir");
+    // 实测必须给www-data rwx权限（也就是7），否则使用file_put_contents写入配置文件无法写入
+    exec("sudo chmod 755 $manageConfigDir");
+    // 管理应用配置文件
+    $manageConfigFile = $manageConfigDir.'/config.json';
+    if(file_exists($manageConfigFile)) {
+    // 如果配置文件存在，则修改文件权限和所有者
+    exec("sudo chown www-data:www-data $manageConfigFile");
+    exec("sudo chmod 644 $manageConfigFile");
+    }
+    // 将JSON数据写入文件
+    return file_put_contents($manageConfigFile, $manageConfigJson);
+}
 ?>

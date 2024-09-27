@@ -13,7 +13,7 @@ AlistApp.App = function () {
   this.active = false
   this.menuIcon = '/apps/alist/images/logo.png?v=6.0.1&'
   this.shortcutIcon = '/apps/alist/images/logo.png?v=6.0.1&'
-  this.entryUrl = '/apps/alist/alist.html?v=6.0.1&'
+  this.entryUrl = '/apps/alist/index.html?v=6.0.1&'
   var self = this
   this.AlistAppWindow = function () {
     if (UNAS.CheckAppState('Alist')) {
@@ -30,8 +30,8 @@ AlistApp.App = function () {
       resizable: true,
       scrollbars: false,
       resizeLimit: { x: [200, 2000], y: [150, 1500] },
-      contentURL: '/apps/alist/alist.html?v=6.0.1&',
-      require: { css: ['/apps/alist/css/alist.css'] },
+      contentURL: '/apps/alist/index.html?v=6.0.1&',
+      require: { css: ['/apps/alist/css/index.css'] },
       onBeforeBuild: function () {
         UNAS.SetAppOpenedWindow('Alist', 'AlistAppWindow')
       },

@@ -5,3 +5,8 @@
 
 set -e
 set -o pipefail
+
+# 判断sbin/uninstall.sh脚本是否存在，如果存在，则卸载之前先执行该脚本
+if [ -f "/unas/apps/SOFT_DIR/sbin/uninstall.sh" ]; then
+  bash /unas/apps/SOFT_DIR/sbin/uninstall.sh
+fi

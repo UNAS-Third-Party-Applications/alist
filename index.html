@@ -9,7 +9,7 @@
     <link
       rel="stylesheet"
       type="text/css"
-      href="/apps/alist/css/alist.css?v=6.0.1&"
+      href="/apps/alist/css/index.css?v=6.0.1&"
     />
     <script>
       window.top.UNAS.SetAppState('Alist', 'active')
@@ -38,7 +38,7 @@
         jQuery('#alist_manager_waiting_content').attr('style', 'display:block')
         jQuery('#alist_manager_waiting_logo').attr('style', 'display:block')
         jQuery.ajax({
-          url: '/apps/alist/includes/services_alist.php',
+          url: '/apps/alist/includes/services.php',
           type: 'POST',
           async: true,
           contentType: 'application/json',
@@ -77,21 +77,34 @@
 
               var shareFolders = data.shareFolders
               var selectFolder = data.configDir
-              if(data.homesAppsFolder && data.homesAppsFolder !== "") {
-                if(shareFolders) {
+              if (
+                data.homesExtConfigFolder &&
+                data.homesExtConfigFolder !== ''
+              ) {
+                if (shareFolders) {
                   shareFolders.unshift({
-                    path: data.homesAppsFolder
+                    path: data.homesExtConfigFolder,
                   })
                 } else {
-                  shareFolders = [{
-                    path: data.homesAppsFolder
-                  }]
+                  shareFolders = [
+                    {
+                      path: data.homesExtConfigFolder,
+                    },
+                  ]
                 }
-                if(selectFolder === null || selectFolder === undefined || selectFolder === '') {
-                  selectFolder = data.homesAppsFolder
+                if (
+                  selectFolder === null ||
+                  selectFolder === undefined ||
+                  selectFolder === ''
+                ) {
+                  selectFolder = data.homesExtConfigFolder
                 }
               }
-              var shareFolderAvail = share_folder_list('alist_config_dir', shareFolders, selectFolder)
+              var shareFolderAvail = share_folder_list(
+                'alist_config_dir',
+                shareFolders,
+                selectFolder
+              )
               // jQuery('#alist_config_dir').val(data.configDir)
               jQuery('#alist_port').val(data.port)
               jQuery('#alist_initial_password').val(data.initialPassword)
@@ -150,7 +163,7 @@
           )
         } else {
           jQuery.ajax({
-            url: '/apps/ddns-go/includes/services_alist.php',
+            url: '/apps/alist/includes/services.php',
             type: 'POST',
             async: false,
             contentType: 'application/json',
@@ -216,7 +229,7 @@
           action: 'manage',
         }
         jQuery.ajax({
-          url: '/apps/alist/includes/services_alist.php',
+          url: '/apps/alist/includes/services.php',
           type: 'POST',
           async: true,
           contentType: 'application/json',
@@ -260,53 +273,63 @@
       }
 
       // 功能函数，缩略太长的字符串
-      function trunc(str, len){
-        if(str == null)
-          return '';
-        var str_length = 0;
-        var str_cut = new String();
-        for (var i = 0; i < str.length; i++){
-          a = str.charAt(i);
-          str_length++;
+      function trunc(str, len) {
+        if (str == null) return ''
+        var str_length = 0
+        var str_cut = new String()
+        for (var i = 0; i < str.length; i++) {
+          a = str.charAt(i)
+          str_length++
           if (escape(a).length > 4) {
-              str_length++;
+            str_length++
           }
-          str_cut = str_cut.concat(a);
+          str_cut = str_cut.concat(a)
           if (str_length > len) {
-            str_cut = str_cut.concat("...");
-            return str_cut;
+            str_cut = str_cut.concat('...')
+            return str_cut
           }
         }
         if (str_length <= len) {
-          return str;
+          return str
         }
       }
 
-      function share_folder_list(elementId, folders, folder_selected){
-        var folder_opts = "";
-        var selected = false;
-        var shareFolderAvail = false;
-        if (folders === null || folders === undefined || folders.length === 0){
+      function share_folder_list(elementId, folders, folder_selected) {
+        var folder_opts = ''
+        var selected = false
+        var shareFolderAvail = false
+        if (folders === null || folders === undefined || folders.length === 0) {
           // 没有共享文件夹可用
-          shareFolderAvail = false;
-          folder_opts = '<option value="">' + UNAS._("##$@alist@$##Enable Home Dir or create a SHARE FOLDER before select##$@alist@$##") + '</option>';
-        }else{
-          shareFolderAvail = true;
+          shareFolderAvail = false
+          folder_opts =
+            '<option value="">' +
+            UNAS._(
+              '##$@alist@$##Enable Home Dir or create a SHARE FOLDER before select##$@alist@$##'
+            ) +
+            '</option>'
+        } else {
+          shareFolderAvail = true
           for (var i = 0; i < folders.length; i++) {
-            var folderPath = folders[i].path;
-            folder_opts += '<option value="' + folderPath + '"' + ' title="' + folderPath + '"';
-            if (folderPath == folder_selected){
-              folder_opts += ' selected="selected"';
-              selected = true;
+            var folderPath = folders[i].path
+            folder_opts +=
+              '<option value="' +
+              folderPath +
+              '"' +
+              ' title="' +
+              folderPath +
+              '"'
+            if (folderPath == folder_selected) {
+              folder_opts += ' selected="selected"'
+              selected = true
             }
-            folder_opts += '>' + trunc(folderPath, 30) + '</option>';
+            folder_opts += '>' + trunc(folderPath, 30) + '</option>'
           }
         }
-        jQuery('#' + elementId).html(folder_opts);
-        if (shareFolderAvail && !selected){
-          jQuery('#'+elementId+' option:first').prop("selected", "selected");
+        jQuery('#' + elementId).html(folder_opts)
+        if (shareFolderAvail && !selected) {
+          jQuery('#' + elementId + ' option:first').prop('selected', 'selected')
         }
-        return shareFolderAvail;
+        return shareFolderAvail
       }
     </script>
   </head>
@@ -359,8 +382,11 @@
                   >##$@alist@$##Configuration Directory:##$@alist@$##</span
                 >
                 <span>
-                  <select class="unas_select" id="alist_config_dir" name="alist_config_dir">
-                  </select>
+                  <select
+                    class="unas_select"
+                    id="alist_config_dir"
+                    name="alist_config_dir"
+                  ></select>
                 </span>
                 <!-- <span
                   ><input

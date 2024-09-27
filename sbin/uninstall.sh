@@ -1,11 +1,5 @@
 #!/bin/bash
 
-if [[ $1 == */ ]]; then
-  INSTALL_PATH=${1%?}
-else
-  INSTALL_PATH=$1
-fi
-
 RED_COLOR='\e[1;31m'
 GREEN_COLOR='\e[1;32m'
 YELLOW_COLOR='\e[1;33m'
@@ -25,7 +19,6 @@ echo -e "${GREEN_COLOR}停止进程${RES}"
 systemctl disable alist >/dev/null 2>&1
 systemctl stop alist >/dev/null 2>&1
 echo -e "${GREEN_COLOR}清除残留文件${RES}"
-# rm -rf $INSTALL_PATH /etc/systemd/system/alist.service
 rm -rf /etc/systemd/system/alist.service
 # 兼容之前的版本
 rm -f /lib/systemd/system/alist.service
