@@ -199,15 +199,14 @@ function getAllSharefolder()
 /*
  * 保存管理程序的配置到配置文件中 
  */
-function saveManageConfig($appDir, $manageConfigData) {
+function saveManageConfig($manageConfigDir, $manageConfigData) {
     // 将配置换成JSON格式
     $manageConfigJson = json_encode($manageConfigData);
-    // 管理应用配置目录
-    $manageConfigDir = $hmoesExtAppsFolder.$appDir;
+    // 判断管理应用配置目录是否存在
     if (!is_dir($manageConfigDir)) {
-    // 文件夹不存在，创建文件夹
-    exec("sudo mkdir -p $manageConfigDir");
-    // 此处不判断是否创建成功，交由后续判断统一处理
+        // 文件夹不存在，创建文件夹
+        exec("sudo mkdir -p $manageConfigDir");
+        // 此处不判断是否创建成功，交由后续判断统一处理
     }
     // 修改管理应用目录权限和所有者
     exec("sudo chown www-data:www-data $manageConfigDir");
@@ -216,9 +215,9 @@ function saveManageConfig($appDir, $manageConfigData) {
     // 管理应用配置文件
     $manageConfigFile = $manageConfigDir.'/config.json';
     if(file_exists($manageConfigFile)) {
-    // 如果配置文件存在，则修改文件权限和所有者
-    exec("sudo chown www-data:www-data $manageConfigFile");
-    exec("sudo chmod 644 $manageConfigFile");
+        // 如果配置文件存在，则修改文件权限和所有者
+        exec("sudo chown www-data:www-data $manageConfigFile");
+        exec("sudo chmod 644 $manageConfigFile");
     }
     // 将JSON数据写入文件
     return file_put_contents($manageConfigFile, $manageConfigJson);
