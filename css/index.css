@@ -14,6 +14,15 @@
   background-color: #ffffff;
 }
 
+.alist_manager .unas_content_right {
+  text-align: center;
+}
+
+.unas_content_right .project-addr {
+  height: 20px;
+  margin: 10px auto;
+}
+
 .alist_page_logo {
   width: 128px;
   height: 128px;

@@ -11,6 +11,8 @@
                 [ "Initial Password:", "alist", "初始密码：" ],
                 [ "Start Alist Service", "alist", "启动Alist服务" ],
                 [ "Stop Alist Service", "alist", "停止Alist服务" ],
+                [ "Alist Project", "alist", "Alist项目地址" ],
+                [ "Current Project", "alist", "当前项目地址" ],
                 [ "Enable Home Dir or create a SHARE FOLDER before select","alist", "请先启用home目录或者创建一个共享文件夹作为Alist存储目录"],
                 [ "Please enable the home directory in the User Account before use","0", "使用套件前请先在用户账户应用中开启homes目录"],
                 [ "Port should between 1 and 65535", "0", "端口应该在1到65535之间" ],
