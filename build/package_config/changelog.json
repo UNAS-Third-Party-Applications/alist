@@ -24,6 +24,16 @@
           "detail": ["Adjust the update process"]
         }
       ]
+    },
+    {
+      "version": "6.0.5",
+      "date": "2025-04-09",
+      "items": [
+        {
+          "caption": "Update Alist",
+          "detail": ["Update Alist to AList v3.44.0"]
+        }
+      ]
     }
   ],
   "translation": {
@@ -38,7 +48,8 @@
             "0",
             "更新alist版本到AList Beta Version"
           ],
-          ["Adjust the update process", "0", "调整更新流程"]
+          ["Adjust the update process", "0", "调整更新流程"],
+          ["Update Alist to AList v3.44.0", "0", "更新alist版本到v3.44.0"]
         ]
       },
       {

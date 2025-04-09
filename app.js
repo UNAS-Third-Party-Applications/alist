@@ -9,11 +9,11 @@ var AlistApp = AlistApp || {} //Define alist App namespace.
 AlistApp.App = function () {
   this.id = 'Alist'
   this.name = 'Alist'
-  this.version = '6.0.4'
+  this.version = '6.0.5'
   this.active = false
-  this.menuIcon = '/apps/alist/images/logo.png?v=6.0.4&'
-  this.shortcutIcon = '/apps/alist/images/logo.png?v=6.0.4&'
-  this.entryUrl = '/apps/alist/index.html?v=6.0.4&'
+  this.menuIcon = '/apps/alist/images/logo.png?v=6.0.5&'
+  this.shortcutIcon = '/apps/alist/images/logo.png?v=6.0.5&'
+  this.entryUrl = '/apps/alist/index.html?v=6.0.5&'
   var self = this
   this.AlistAppWindow = function () {
     if (UNAS.CheckAppState('Alist')) {
@@ -22,7 +22,7 @@ AlistApp.App = function () {
     self.window = new MUI.Window({
       id: 'AlistAppWindow',
       title: UNAS._('Alist'),
-      icon: '/apps/alist/images/logo_small.png?v=6.0.4&',
+      icon: '/apps/alist/images/logo_small.png?v=6.0.5&',
       loadMethod: 'xhr',
       width: 750,
       height: 480,
@@ -30,7 +30,7 @@ AlistApp.App = function () {
       resizable: true,
       scrollbars: false,
       resizeLimit: { x: [200, 2000], y: [150, 1500] },
-      contentURL: '/apps/alist/index.html?v=6.0.4&',
+      contentURL: '/apps/alist/index.html?v=6.0.5&',
       require: { css: ['/apps/alist/css/index.css'] },
       onBeforeBuild: function () {
         UNAS.SetAppOpenedWindow('Alist', 'AlistAppWindow')
